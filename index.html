@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="hy">
 <head>
@@ -1142,7 +1141,7 @@ window.submitRSVP = async function() {
     var params = new URLSearchParams({
       name: name,
       attend: attendText,
-      side: isYes ? sideText : '',
+      side: sideText,
       guests: isYes ? guests : '0',
       comment: comment
     });
