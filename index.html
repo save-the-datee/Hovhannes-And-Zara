@@ -230,6 +230,49 @@ body {
 
 @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCROLL INDICATOR ── */
+.scroll-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  animation: fadeUp 1.5s ease 1s both;
+}
+.scroll-indicator.hidden { opacity: 0; }
+.scroll-indicator span {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+}
+.scroll-chevrons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.scroll-chevrons svg {
+  display: block;
+  animation: chevronFade 1.6s ease-in-out infinite;
+}
+.scroll-chevrons svg:nth-child(2) { animation-delay: 0.2s; }
+.scroll-chevrons svg:nth-child(3) { animation-delay: 0.4s; }
+@keyframes chevronFade {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.9; }
+}
 @keyframes slideInLeft { from{opacity:0;transform:translateX(-48px)} to{opacity:1;transform:translateX(0)} }
 .slide-in-left { opacity:0; transform:translateX(-48px); }
 .slide-in-left.visible { animation: slideInLeft 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
@@ -799,7 +842,37 @@ function openInvitation() {
     </span>
     <span class="hero-name">Զառա</span>
   </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator" id="scroll-indicator">
+    <div class="scroll-chevrons">
+      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
 </section>
+<script>
+(function() {
+  var indicator = document.getElementById('scroll-indicator');
+  var hidden = false;
+  window.addEventListener('scroll', function() {
+    if (!hidden && window.scrollY > 40) {
+      indicator.classList.add('hidden');
+      hidden = true;
+    } else if (hidden && window.scrollY <= 40) {
+      indicator.classList.remove('hidden');
+      hidden = false;
+    }
+  }, { passive: true });
+})();
+</script>
 
 <!-- COUNTDOWN -->
 <section class="countdown-section">
