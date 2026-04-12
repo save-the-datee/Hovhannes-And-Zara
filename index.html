@@ -230,49 +230,6 @@ body {
 
 @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-
-/* ── SCROLL INDICATOR ── */
-.scroll-indicator {
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  width: fit-content;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  opacity: 1;
-  transition: opacity 0.6s ease;
-  pointer-events: none;
-  animation: fadeUp 1.5s ease 1s both;
-}
-.scroll-indicator.hidden { opacity: 0; }
-.scroll-indicator span {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 11px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-}
-.scroll-chevrons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-.scroll-chevrons svg {
-  display: block;
-  animation: chevronFade 1.6s ease-in-out infinite;
-}
-.scroll-chevrons svg:nth-child(2) { animation-delay: 0.2s; }
-.scroll-chevrons svg:nth-child(3) { animation-delay: 0.4s; }
-@keyframes chevronFade {
-  0%, 100% { opacity: 0.2; }
-  50%       { opacity: 0.9; }
-}
 @keyframes slideInLeft { from{opacity:0;transform:translateX(-48px)} to{opacity:1;transform:translateX(0)} }
 .slide-in-left { opacity:0; transform:translateX(-48px); }
 .slide-in-left.visible { animation: slideInLeft 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
@@ -842,37 +799,7 @@ function openInvitation() {
     </span>
     <span class="hero-name">Զառա</span>
   </div>
-
-  <!-- Scroll indicator -->
-  <div class="scroll-indicator" id="scroll-indicator">
-    <div class="scroll-chevrons">
-      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <svg width="28" height="10" viewBox="0 0 28 10" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="2,2 14,8 26,2" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-  </div>
 </section>
-<script>
-(function() {
-  var indicator = document.getElementById('scroll-indicator');
-  var hidden = false;
-  window.addEventListener('scroll', function() {
-    if (!hidden && window.scrollY > 40) {
-      indicator.classList.add('hidden');
-      hidden = true;
-    } else if (hidden && window.scrollY <= 40) {
-      indicator.classList.remove('hidden');
-      hidden = false;
-    }
-  }, { passive: true });
-})();
-</script>
 
 <!-- COUNTDOWN -->
 <section class="countdown-section">
@@ -1002,6 +929,20 @@ function openInvitation() {
   <div class="input-row" id="rsvp-guests-row">
     <input class="rsvp-input full" id="rsvp-guests" type="number" min="1" step="1" placeholder="Հյուրերի քանակ" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
     <div id="err-guests" style="display:none; color:#c0392b; font-size:13px; margin-top:5px; font-style:italic;">Խնդրում ենք մուտքագրել վավեր թիվ</div>
+  </div>
+
+  <div class="input-row" id="rsvp-phone-row">
+    <input class="rsvp-input full" id="rsvp-phone" type="tel" placeholder="Հեռախոսահամար" oninput="
+      var v = this.value;
+      var hasPlus = v.startsWith('+');
+      var digits = v.replace(/[^0-9]/g, '');
+      this.value = hasPlus ? '+' + digits : digits;
+    " onkeypress="
+      var ch = String.fromCharCode(event.which);
+      if (ch === '+' && this.selectionStart === 0 && !this.value.startsWith('+')) return true;
+      if (!/[0-9]/.test(ch)) event.preventDefault();
+    ">
+    <div id="err-phone" style="display:none; color:#c0392b; font-size:13px; margin-top:5px; font-style:italic;">Խնդրում ենք մուտքագրել վավեր հեռախոսահամար</div>
   </div>
 
   <input class="rsvp-input full" id="rsvp-comment" type="text" placeholder="Մեկնաբանություն">
@@ -1153,12 +1094,17 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('input[name="attend"]').forEach(function(radio) {
   radio.addEventListener('change', function() {
     var guestsRow = document.getElementById('rsvp-guests-row');
+    var phoneRow = document.getElementById('rsvp-phone-row');
     if (this.value === 'no') {
       guestsRow.style.display = 'none';
       document.getElementById('err-guests').style.display = 'none';
       document.getElementById('rsvp-guests').style.borderColor = '';
+      phoneRow.style.display = 'none';
+      document.getElementById('err-phone').style.display = 'none';
+      document.getElementById('rsvp-phone').style.borderColor = '';
     } else {
       guestsRow.style.display = 'block';
+      phoneRow.style.display = 'block';
     }
   });
 });
@@ -1169,13 +1115,16 @@ window.submitRSVP = async function() {
   var sideVal = document.querySelector('input[name="side"]:checked');
   var attendText = (attendVal && attendVal.value === 'yes') ? 'Այո ✓' : 'Ոչ ✗';
   var isYes = attendVal && attendVal.value === 'yes';
+  var name = document.getElementById('rsvp-name').value.trim();
 
-  var name = '', guests = '0';
+  var guests = '0', phone = '';
   var valid = true;
 
+
   if (isYes) {
-    name = document.getElementById('rsvp-name').value.trim();
+
     guests = document.getElementById('rsvp-guests').value.trim();
+    phone = document.getElementById('rsvp-phone').value.trim();
 
     // Validate name
     if (!name) {
@@ -1198,6 +1147,17 @@ window.submitRSVP = async function() {
       document.getElementById('err-guests').style.display = 'none';
     }
 
+    // Validate phone
+    var phoneDigits = phone.replace(/^\+/, '');
+    if (!phone || phoneDigits.length < 5 || !/^\+?[0-9]+$/.test(phone)) {
+      document.getElementById('rsvp-phone').style.borderColor = '#c0392b';
+      document.getElementById('err-phone').style.display = 'block';
+      valid = false;
+    } else {
+      document.getElementById('rsvp-phone').style.borderColor = '';
+      document.getElementById('err-phone').style.display = 'none';
+    }
+
     if (!valid) return;
   }
 
@@ -1210,12 +1170,13 @@ window.submitRSVP = async function() {
   }
 
   try {
-    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHT-9WTY5l_IMarZWVa-6ZWkCfQfWhI7Wn-lmMZu1OKHfEyyLbTw4EpecQxAmo4YjWuQ/exec';
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysys_1L87hpbiNoWre82wPyJOc47YTDLduICCKazUcl4GL4Mgr2uUIgK6JJU-YTXKybQ/exec';
     var params = new URLSearchParams({
       name: name,
       attend: attendText,
       side: sideText,
       guests: isYes ? guests : '0',
+      phone: isYes ? phone : '',
       comment: comment
     });
     await fetch(SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
