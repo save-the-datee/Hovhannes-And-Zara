@@ -1120,21 +1120,20 @@ window.submitRSVP = async function() {
   var guests = '0', phone = '';
   var valid = true;
 
+  // Validate name always (both yes and no)
+  if (!name) {
+    document.getElementById('rsvp-name').style.borderColor = '#c0392b';
+    document.getElementById('err-name').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('rsvp-name').style.borderColor = '';
+    document.getElementById('err-name').style.display = 'none';
+  }
 
   if (isYes) {
 
     guests = document.getElementById('rsvp-guests').value.trim();
     phone = document.getElementById('rsvp-phone').value.trim();
-
-    // Validate name
-    if (!name) {
-      document.getElementById('rsvp-name').style.borderColor = '#c0392b';
-      document.getElementById('err-name').style.display = 'block';
-      valid = false;
-    } else {
-      document.getElementById('rsvp-name').style.borderColor = '';
-      document.getElementById('err-name').style.display = 'none';
-    }
 
     // Validate guests
     var guestsNum = parseInt(guests, 10);
@@ -1160,6 +1159,8 @@ window.submitRSVP = async function() {
 
     if (!valid) return;
   }
+
+  if (!valid) return;
 
   var comment = document.getElementById('rsvp-comment').value.trim();
   var sideText = (sideVal && sideVal.value === 'groom') ? 'Փեսայի' : 'Հարսի';
