@@ -234,6 +234,33 @@ body {
 .slide-in-left { opacity:0; transform:translateX(-48px); }
 .slide-in-left.visible { animation: slideInLeft 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
 
+/* ── SCROLL INDICATOR ── */
+.scroll-hint {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 44px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: pointer;
+  animation: fadeUp 1.6s ease 0.8s both;
+}
+.scroll-hint-chevron {
+  display: block;
+  animation: scrollBounce 1.8s ease-in-out infinite;
+}
+.scroll-hint-chevron:nth-child(2) { animation-delay: 0.2s; opacity: 0.55; }
+.scroll-hint-chevron:nth-child(3) { animation-delay: 0.4s; opacity: 0.3; }
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(5px); }
+}
+
 /* ── INVITE TEXT ── */
 .section-light {
   background: var(--light);
@@ -781,6 +808,12 @@ function openInvitation() {
   </div>
 
   <div class="hero-std">SAVE<br>THE<br>DATE</div>
+
+  <div class="scroll-hint" onclick="document.querySelector('.countdown-section').scrollIntoView({behavior:'smooth'})">
+    <svg class="scroll-hint-chevron" width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,2 15,10 28,2" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="scroll-hint-chevron" width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,2 15,10 28,2" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="scroll-hint-chevron" width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="2,2 15,10 28,2" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
 
   <div class="hero-names">
     <span class="hero-name">Հովհաննես</span>
